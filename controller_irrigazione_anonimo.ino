@@ -1,5 +1,5 @@
 
-// === Controller Irrigazione Automatico v7 - 2025 ===
+// === Controller Irrigazione Automatico v8 - 2025 ===
 // Codice reso anonimo per condivisione su GitHub
 // Tutti i dati sensibili (SSID, Password WiFi, Token Telegram, API Key Meteo) 
 // sono stati rimossi o sostituiti con placeholder.
