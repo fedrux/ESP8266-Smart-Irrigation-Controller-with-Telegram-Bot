@@ -1,0 +1,11 @@
+{
+  "core_version": "1.1.1",
+  "upstream": "https://github.com/fedrux/esp-device-core",
+  "files": {
+    "ESPDeviceCore.h": "80e21101cc3fa50e77eb66d2647472bbc9ff28f94b770c8fb2243e2b0f50e621",
+    "ESPDeviceCore.cpp": "ace10962c153358b76d04389410c1da62d4d25b7090593c315f703b5ac0b3d42",
+    "DeviceCoreProtocol.h": "4ac4d56f0076d8f288f5f22138b92d2c008c981a46142f2a248886b041384d65",
+    "DeviceAdminPageGzip.h": "531fb325165ea63a67c99a463a38783e3cd205c7330af696a90a21739aeac0f6"
+  },
+  "note": "Vendored snapshot matching the tested local integration; upstream main may contain an older implementation."
+}

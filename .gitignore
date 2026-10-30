@@ -1,0 +1,13 @@
+firmware/nodemcu_spruzzini/config_privata.h
+build/
+output/
+__pycache__/
+*.pyc
+*.bin
+*.edc
+*.elf
+*.map
+*.log
+build-report.json
+build-verificata.json
+SINCRONIZZAZIONE.json

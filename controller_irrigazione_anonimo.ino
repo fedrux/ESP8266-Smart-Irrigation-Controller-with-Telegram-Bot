@@ -121,7 +121,7 @@ unsigned long timestampUltimaPioggia = 0;  // salva l'orario dell'ultima pioggia
 
 void controllaPulsante() {
   if (digitalRead(pinPulsante)) {
-    bot.sendMessage("404952185", "🔘 Pulsante fisico premuto\nAvvio ciclo manuale per " + String(dati.minutiDurata) + " minuti", "");
+    bot.sendMessage("YOUR_TELEGRAM_CHAT_ID_1", "🔘 Pulsante fisico premuto\nAvvio ciclo manuale per " + String(dati.minutiDurata) + " minuti", "");
     iniziaSequenzaIrrigazione(dati.minutiDurata);
   }
 }
@@ -293,7 +293,7 @@ void setup() {
 
   Serial.println(orario());
 
-  bot.sendMessage("404952185", "Avvio v8\n" + benvenuto, "");
+  bot.sendMessage("YOUR_TELEGRAM_CHAT_ID_1", "Avvio v8\n" + benvenuto, "");
   pinMode(pinLed, OUTPUT);
   digitalWrite(pinLed, LOW);  // spegni inizialmente
 }
