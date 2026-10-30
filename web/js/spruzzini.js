@@ -39,8 +39,8 @@
     controls(!active && data.storage_ready);
   }
   async function request(url, options) {
-    var response = await fetch(url, Object.assign({credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000)}, options));
-    if (response.status === 401) throw new Error('Accesso richiesto: ricarica la pagina e inserisci le credenziali.');
+    var response = await fetch(url, Object.assign({credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(15000)}, options));
+    if (response.status === 401) throw new Error('Interfaccia non aggiornata: questa pagina deve essere accessibile senza password.');
     var body = await response.json();
     if (!response.ok) throw new Error(body.message || 'Operazione non riuscita');
     return body;

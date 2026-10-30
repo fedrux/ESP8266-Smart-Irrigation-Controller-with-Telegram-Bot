@@ -10,11 +10,11 @@ function fixture() {
   const nodes = {};
   for(const [,id] of html.matchAll(/id="([^"]+)"/g)) nodes[id] = {disabled:false,textContent:'',className:'',value:'',checked:false,children:[],handlers:{},addEventListener(event,handler){this.handlers[event]=handler;},showModal(){this.open=true;}};
   nodes.sectors.children = Array.from({length:5},()=>{const strong={textContent:''}; return {querySelector(){return strong;},strong};});
-  const state = {application:'nodemcu-spruzzini',version:'8.1.1',csrf_token:'boot-token',cycle_active:false,single_active:false,sector:0,remaining_seconds:0,configured:true,automatic:true,start_hour:6,minutes:10,smart:true,rain_hours_saved:12,outputs:[false,false,false,false,false],storage_ready:true,storage_error:'',clock_valid:true,clock:'30/10/2026 15:00:00',status:'A riposo',last_cycle:2026103006};
+  const state = {application:'nodemcu-spruzzini',version:'8.1.2',csrf_token:'boot-token',cycle_active:false,single_active:false,sector:0,remaining_seconds:0,configured:true,automatic:true,start_hour:6,minutes:10,smart:true,rain_hours_saved:12,outputs:[false,false,false,false,false],storage_ready:true,storage_error:'',clock_valid:true,clock:'30/10/2026 15:00:00',status:'A riposo',last_cycle:2026103006};
   const calls=[], timers=new Map(); let failure=false, nextTimer=1;
   const context = {document:{getElementById(id){return nodes[id];}},Date,Math,Object,Array,Error,URLSearchParams,AbortSignal,console,
     setTimeout(callback){let id=nextTimer++;timers.set(id,callback);return id;},clearTimeout(id){timers.delete(id);},
-    async fetch(url,options){calls.push({url,options});if(failure) throw new Error('Connessione persa');return {ok:true,status:200,async json(){if(options.method==='POST')return {message:'Richiesta ricevuta'};return JSON.parse(JSON.stringify(state));}};}};
+    async fetch(url,options){assert.equal(options.credentials,'omit');assert.equal(options.headers?.Authorization,undefined);calls.push({url,options});if(failure) throw new Error('Connessione persa');return {ok:true,status:200,async json(){if(options.method==='POST')return {message:'Richiesta ricevuta'};return JSON.parse(JSON.stringify(state));}};}};
   vm.runInNewContext(source, context);
   return {nodes,state,calls,timers,offline(value){failure=value;},async refresh(){const callback=[...timers.values()].at(-1);timers.clear();callback();await flush();},submit(id){nodes[id].handlers.submit({preventDefault(){}});},click(id){nodes[id].handlers.click();}};
 }

@@ -9,7 +9,7 @@ void iniziaSequenzaIrrigazione(int durataMinuti);
 void avviaSettoreSingolo(int numeroSettore, int durataMinuti);
 String orario();
 constexpr char NOME_RETE[] = "nodemcu-spruzzini";
-ESP_DEVICE_FIRMWARE(firmwareIdentity, "nodemcu-spruzzini", "8.1.1");
+ESP_DEVICE_FIRMWARE(firmwareIdentity, "nodemcu-spruzzini", "8.1.2");
 DeviceCoreConfig configurazioneCore() {
   DeviceCoreConfig config{NOME_RETE, ssid, password,
     WIFI_SECONDARY_SSID, WIFI_SECONDARY_PASSWORD, ADMIN_USER, ADMIN_PASSWORD, SETUP_AP_PASSWORD};
@@ -34,11 +34,6 @@ String statoApplicazione() {
   if (settoreSingoloAttivo) return "Settore singolo " + String(settoreAttivoSingolo + 1);
   return dati.impostazioniSet ? "Irrigazione a riposo; programma configurato" : "Irrigazione a riposo; programma da configurare";
 }
-bool autenticato() {
-  auto& web = deviceCore.server();
-  if (web.authenticate(ADMIN_USER, ADMIN_PASSWORD)) return true;
-  web.requestAuthentication(); return false;
-}
 void rispostaSpruzzini(int code, const String& message) {
   StaticJsonDocument<512> doc;
   doc["success"] = code >= 200 && code < 300; doc["message"] = message;
@@ -46,8 +41,8 @@ void rispostaSpruzzini(int code, const String& message) {
   deviceCore.server().sendHeader("Cache-Control", "no-store");
   deviceCore.server().send(code, "application/json", body);
 }
+// Public application controls retain CSRF; /admin authentication belongs to the core.
 bool autorizzaScrittura() {
-  if (!autenticato()) return false;
   auto& web = deviceCore.server();
   if (tokenSpruzzini.isEmpty() || web.header("X-CSRF-Token") != tokenSpruzzini) {
     rispostaSpruzzini(403, "Sessione non valida: ricarica la pagina"); return false;
@@ -66,9 +61,8 @@ bool numeroArgomento(const char* name, int minimum, int maximum, int& output) {
   output = number; return true;
 }
 void inviaStatoSpruzzini() {
-  if (!autenticato()) return;
   StaticJsonDocument<2048> doc;
-  doc["application"] = "nodemcu-spruzzini"; doc["version"] = "8.1.1";
+  doc["application"] = "nodemcu-spruzzini"; doc["version"] = "8.1.2";
   doc["hostname"] = String(NOME_RETE) + ".local";
   doc["ip"] = WiFi.localIP().toString();
   doc["csrf_token"] = tokenSpruzzini; doc["status"] = statoApplicazione();
@@ -147,7 +141,6 @@ void comandoSpruzzini() {
   rispostaSpruzzini(400, "Comando non riconosciuto");
 }
 void inviaAsset(const char* type, const uint8_t* bytes, size_t length) {
-  if (!autenticato()) return;
   auto& web = deviceCore.server();
   web.sendHeader("Cache-Control", "no-store"); web.sendHeader("Content-Encoding", "gzip");
   web.sendHeader("X-Content-Type-Options", "nosniff");

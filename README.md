@@ -1,13 +1,12 @@
 # ESP8266 Smart Irrigation Controller with Telegram Bot
 
-**Version 8.1.1** adds a local irrigation dashboard and the shared **ESP Device
+**Version 8.1.2** adds a local irrigation dashboard and the shared **ESP Device
 Core 1.1.1** administration interface to the historical v8 controller. Irrigation
 timing, relay pins, scheduling and Telegram commands retain the v8 behavior.
 
 The complete firmware compiles for **NodeMCU ESP8266** with Arduino ESP8266 core
 **3.1.2**. Nine source/asset contracts and five simulated UI scenarios pass.
-**The new integration has not been installed or physically validated on the
-irrigation controller.** Compilation does not establish relay, migration, radio
+**This release has not been physically validated on the irrigation controller.** Compilation does not establish relay, migration, radio
 or OTA behavior on real hardware.
 
 ## Firmware layout
@@ -38,7 +37,7 @@ compatibility.
 | Single sector | One selected sector with a 1–120 minute duration |
 | Daily program | Start hour 0–23; stores an hourly run reference to prevent repetition |
 | Weather smart mode | Skips automatic irrigation after a detected Rain/Drizzle observation |
-| Dashboard | Protected status, outputs, remaining time, start/stop and settings |
+| Dashboard | Public status, outputs, remaining time, start/stop and settings |
 | Administration | Primary/secondary Wi-Fi, recovery AP, diagnostics, restart and `.edc` OTA |
 
 D3/GPIO0, D4/GPIO2 and D8/GPIO15 also affect ESP8266 boot mode. Keep the existing
@@ -99,7 +98,7 @@ pass `--arduino-cli "C:/path/to/arduino-cli.exe"`. The Arduino IDE installation
 may already include it. The script rebuilds web assets, runs all 14 checks,
 compiles the full sketch and verifies the generated EDC package.
 
-Private outputs are written to `output/nodemcu-spruzzini-8.1.1.bin` and `.edc`.
+Private outputs are written to `output/nodemcu-spruzzini-8.1.2.bin` and `.edc`.
 **Compiled images embed the configuration; do not publish your configured
 images or private header.** No personal preconfigured firmware is provided by
 this public repository. The original private installation package is separate.
@@ -126,11 +125,15 @@ partitions are left intact. Invalid records do not configure automatic starts.
 
 ## Web interface
 
-- `/`: protected irrigation dashboard.
-- `/admin`: shared core administration.
-- `GET /api/spruzzini/status`: authenticated application state and CSRF token.
-- `POST /api/spruzzini/command`: authenticated `cycle`, `sector`, `stop`,
+- `/`: public irrigation dashboard, including assets, controls and settings.
+- `/admin`: password-protected shared core administration, including its API.
+- `GET /api/spruzzini/status`: public application state and CSRF token.
+- `POST /api/spruzzini/command`: public `cycle`, `sector`, `stop`,
   `settings`, `reset`, with `X-CSRF-Token`.
+
+Application requests omit browser credentials. Only administration requires the
+configured administrator password; existing credentials are unchanged. The shared
+core source is unchanged.
 
 The web interface rejects overlapping starts and settings changes while
 irrigation is active. Core restart, network trial and firmware upload are

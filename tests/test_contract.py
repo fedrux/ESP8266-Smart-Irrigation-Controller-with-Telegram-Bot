@@ -63,10 +63,17 @@ class Contract(unittest.TestCase):
         self.assertLess(NEW.index('digitalWrite(pinSettori[i], HIGH)'), NEW.index('caricaDati();'))
         self.assertLess(NEW.index('caricaDati();'), NEW.index('deviceCore.begin();'))
 
-    def test_controls_protected_and_maintenance_rejected_before_upload(self):
+    def test_public_controls_keep_csrf_and_maintenance_rejected_before_upload(self):
         source = SKETCH.joinpath('spruzzini_interface.h').read_text()
         self.assertTrue(function(source, 'comandoSpruzzini').startswith('void comandoSpruzzini() {\n  if (!autorizzaScrittura()) return;'))
         self.assertIn('web.header("X-CSRF-Token") != tokenSpruzzini', source)
+        self.assertNotIn("autenticato(", source)
+        self.assertNotIn(".authenticate(", source)
+        self.assertNotIn(".requestAuthentication(", source)
+        self.assertIn('web.on("/api/spruzzini/status", HTTP_GET, inviaStatoSpruzzini)', source)
+        core = SKETCH.joinpath("ESPDeviceCore.cpp").read_text()
+        self.assertIn("server_.authenticate", core)
+        self.assertIn("server_.requestAuthentication", core)
         self.assertIn('web.addHook', source)
         for path in ['/admin/api/update', '/admin/api/restart', '/admin/api/config']:
             self.assertIn('url == "' + path + '"', source)
